@@ -1,6 +1,12 @@
 # lotus-create
 
+<div align="center">
+
 a tool for generating basic javascript or typescript project
+
+![NPM Downloads](https://img.shields.io/npm/dw/lotus-create)
+
+</div>
 
 ## getting started
 
