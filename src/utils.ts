@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 export const clearCommandLine = () => console.clear();
 
-export const createProjectDirectory = async () => {
+export const createProjectDirectory: () => Promise<string> = async () => {
   const path = await global.options.projectName;
 
   const directory: Promise<string> = new Promise((resolve, reject) => {
@@ -29,24 +29,28 @@ export const createProjectDirectory = async () => {
   return directory;
 };
 
-export const projectInit = () => {
-  exec(`cd ${global.options.projectName} && ${global.options.packageManager} init -y`, err => {
-    if (err) {
-      console.log(`${chalk.red('✘')} failed to initialize the project`);
+export const projectInit: () => Promise<string> = () => {
+  const worked: Promise<string> = new Promise((resolve, reject) => {
+    exec(`cd ${global.options.projectName} && ${global.options.packageManager} init -y`, err => {
+      if (err) {
+        console.log(`${chalk.red('✘')} failed to initialize the project`);
 
-      let coloredText;
+        let coloredText;
 
-      if (global.options.packageManager === 'npm') coloredText = chalk.red('npm');
-      if (global.options.packageManager === 'yarn') coloredText = chalk.hex('#02acf4')('yarn');
-      if (global.options.packageManager === 'pnpm') coloredText = chalk.hex('#f4b802')('pnpm');
+        if (global.options.packageManager === 'npm') coloredText = chalk.red('npm');
+        if (global.options.packageManager === 'yarn') coloredText = chalk.hex('#02acf4')('yarn');
+        if (global.options.packageManager === 'pnpm') coloredText = chalk.hex('#f4b802')('pnpm');
 
-      console.log(`are you sure you have ${coloredText} installed?`);
-    } else console.log(`${chalk.green('✔')} initialized ${global.options.packageManager} project`);
+        console.log(`are you sure you have ${coloredText} installed?`);
+        reject('failed');
+      } else {
+        resolve('worked');
+        console.log(`${chalk.green('✔')} initialized ${global.options.packageManager} project`);
+      }
+    });
   });
 
-  return new Promise(resolve => {
-    resolve(null);
-  });
+  return worked;
 };
 
 export const createSrc = () => {
