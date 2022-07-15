@@ -3,7 +3,9 @@
   "version": "1.0.2",
   "description": "wip",
   "main": "dist/index.js",
-  "bin": "dist/index.js",
+  "bin": {
+    "lotus-create": "dist/index.js"
+  },
   "author": "frogdude1123",
   "license": "MIT",
   "type": "module",
@@ -14,14 +16,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/frog1123/lotus-create.git"
+    "url": "git+https://github.com/frog1123/lotus-create.git"
   },
   "dependencies": {
+    "chalk": "^5.0.1",
     "gradient-string": "^2.0.1",
     "inquirer": "^9.0.1"
   },
   "devDependencies": {
     "@types/gradient-string": "^1.1.2",
     "@types/inquirer": "^8.2.1"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/frog1123/lotus-create/issues"
+  },
+  "homepage": "https://github.com/frog1123/lotus-create#readme",
+  "keywords": []
 }

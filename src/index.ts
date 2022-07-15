@@ -1,10 +1,15 @@
 #! /usr/bin/env node
 
-import { options, askProjectName, askLang, askPackageManager } from './inquirer.js';
+import { askProjectName, askLang, askPackageManager } from './inquirer.js';
+import { createProjectDirectory, projectInit } from './utils.js';
 
 (async () => {
   askProjectName()
     .then(() => askLang())
     .then(() => askPackageManager())
-    .then(() => console.log(`options: ${JSON.stringify(options)}`));
+    .then(() =>
+      createProjectDirectory()
+        .then(() => projectInit())
+        .catch(() => {})
+    );
 })();

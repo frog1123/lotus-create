@@ -7,11 +7,11 @@ interface Options {
   packageManager: string | null;
 }
 
-export const options: Options = {
+global.options = {
   projectName: null,
   language: null,
   packageManager: null
-};
+} as Options;
 
 const color = gradient(['#72ea84', '#35ce4c', '#07af20']);
 
@@ -26,7 +26,7 @@ export const askProjectName = async () => {
       }
     ])
     .then(({ projectName }) => {
-      options.projectName = projectName;
+      global.options.projectName = projectName;
     });
 };
 
@@ -41,7 +41,7 @@ export const askLang = async () => {
       }
     ])
     .then(({ language }) => {
-      options.language = language;
+      global.options.language = language;
     });
 };
 
@@ -56,6 +56,6 @@ export const askPackageManager = async () => {
       }
     ])
     .then(({ packageManager }) => {
-      options.packageManager = packageManager;
+      global.options.packageManager = packageManager;
     });
 };
