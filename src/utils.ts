@@ -60,11 +60,45 @@ export const createSrc = () => {
 };
 
 export const createIndex = () => {
-  writeFile(`${global.options.projectName}/src/index.js`, `console.log('hello world')`, err => {
+  const langShort = global.options.language === 'typescript' ? 'ts' : 'js';
+
+  writeFile(`${global.options.projectName}/src/index.${langShort}`, `console.log('hello world')`, err => {
     if (err !== null) {
-      console.log(`${chalk.red('✘')} failed to create index.js`);
+      console.log(`${chalk.red('✘')} failed to create index.${langShort}`);
       return;
     }
-    console.log(`${chalk.green('✔')} created index.js`);
+    console.log(`${chalk.green('✔')} created index.${langShort}`);
+  });
+
+  return new Promise(resolve => {
+    resolve(null);
+  });
+};
+
+export const createTsConfig = () => {
+  if (global.options.language === 'typescript') {
+    const options = '{\r\n  "compilerOptions": {\r\n    "target": "esnext",\r\n    "module": "esnext",\r\n    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],\r\n    "skipLibCheck": true,\r\n    "sourceMap": true,\r\n    "outDir": "./dist",\r\n    "moduleResolution": "node",\r\n    "removeComments": true,\r\n    "noImplicitAny": true,\r\n    "strictNullChecks": true,\r\n    "strictFunctionTypes": true,\r\n    "noImplicitThis": true,\r\n    "noUnusedLocals": false,\r\n    "noUnusedParameters": false,\r\n    "noImplicitReturns": false,\r\n    "noFallthroughCasesInSwitch": true,\r\n    "allowSyntheticDefaultImports": true,\r\n    "esModuleInterop": true,\r\n    "emitDecoratorMetadata": true,\r\n    "experimentalDecorators": true,\r\n    "resolveJsonModule": true,\r\n    "baseUrl": "."\r\n  },\r\n  "include": ["src/*"]\r\n}\r\n';
+
+    writeFile(`${global.options.projectName}/tsconfig.json`, options, err => {
+      if (err !== null) {
+        console.log(`${chalk.red('✘')} failed to create tsconfig.json`);
+        return;
+      }
+      console.log(`${chalk.green('✔')} created tsconfig.json`);
+    });
+  }
+
+  return new Promise(resolve => {
+    resolve(null);
+  });
+};
+
+export const createGitIgnore = () => {
+  writeFile(`${global.options.projectName}/.gitignore`, 'node_modules\n*.env', err => {
+    if (err !== null) {
+      console.log(`${chalk.red('✘')} failed to create .gitignore`);
+      return;
+    }
+    console.log(`${chalk.green('✔')} created .gitignore`);
   });
 };

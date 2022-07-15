@@ -19,5 +19,5 @@ npm i -g lotus-create
 ## planning to add
 
 - typescript support
-- auto gitignore for node_modules & env
+- auto gitignore for node_modules & env (done)
 - license

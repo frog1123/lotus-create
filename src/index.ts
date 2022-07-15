@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 import { askProjectName, askLang, askPackageManager } from './inquirer.js';
-import { clearCommandLine, createIndex, createProjectDirectory, createSrc, projectInit } from './utils.js';
+import { clearCommandLine, createGitIgnore, createIndex, createProjectDirectory, createSrc, createTsConfig, projectInit } from './utils.js';
 
 (async () => {
   askProjectName()
@@ -14,6 +14,8 @@ import { clearCommandLine, createIndex, createProjectDirectory, createSrc, proje
         .catch(() => {})
         .then(() => createSrc())
         .catch(() => {})
+        .then(() => createTsConfig())
         .then(() => createIndex())
+        .then(() => createGitIgnore())
     );
 })();
