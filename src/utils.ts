@@ -1,61 +1,22 @@
-import inquirer from 'inquirer';
-import gradient from 'gradient-string';
+import { options } from './inquirer.js';
 
-interface Options {
-  projectName: string | null;
-  language: string | null;
-  packageManager: string | null;
-}
+import { exec } from 'child_process';
+import { access, mkdir } from 'fs';
 
-export const options: Options = {
-  projectName: null,
-  language: null,
-  packageManager: null
+// const path = `./${options.projectName}`;
+const path = `./new-proj`;
+
+const createProjectDirectory = () => {
+  access(path, (error: any) => {
+    if (error) {
+      mkdir(path, (error: any) => {
+        if (error) console.log(error);
+        else console.log(`Created new directory: ${options.projectName}`);
+      });
+    } else {
+      console.log('Directory already exists');
+    }
+  });
 };
 
-const color = gradient(['#72ea84', '#35ce4c', '#07af20']);
-
-export const askProjectName = async () => {
-  await inquirer
-    .prompt([
-      {
-        type: 'input',
-        name: 'projectName',
-        message: `Choose a ${color('project name')}`,
-        default: () => 'new-project'
-      }
-    ])
-    .then(({ projectName }) => {
-      options.projectName = projectName;
-    });
-};
-
-export const askLang = async () => {
-  await inquirer
-    .prompt([
-      {
-        type: 'list',
-        name: 'language',
-        message: `Choose a ${color('language')}`,
-        choices: ['javascript', 'typescript']
-      }
-    ])
-    .then(({ language }) => {
-      options.language = language;
-    });
-};
-
-export const askPackageManager = async () => {
-  await inquirer
-    .prompt([
-      {
-        type: 'list',
-        name: 'packageManager',
-        message: `Choose a ${color('package manager')}`,
-        choices: ['npm', 'yarn', 'pnpm']
-      }
-    ])
-    .then(({ packageManager }) => {
-      options.packageManager = packageManager;
-    });
-};
+createProjectDirectory();

@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-import { options, askProjectName, askLang, askPackageManager } from './utils.js';
+import { options, askProjectName, askLang, askPackageManager } from './inquirer.js';
 
 (async () => {
   askProjectName()
