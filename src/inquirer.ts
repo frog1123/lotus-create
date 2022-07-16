@@ -92,7 +92,7 @@ export const askLicense = async () => {
 };
 
 export const askHolder = async () => {
-  if (global.options.holder !== 'none') {
+  if (global.options.license !== 'none') {
     await inquirer
       .prompt([
         {
