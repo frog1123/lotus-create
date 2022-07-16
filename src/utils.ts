@@ -1,11 +1,9 @@
 import { exec } from 'child_process';
 import { access, mkdir, writeFileSync, readFileSync } from 'fs';
 import chalk from 'chalk';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = process.cwd();
 
 export const clearCommandLine = () => console.clear();
 
@@ -123,7 +121,7 @@ export const createGitIgnore = () => {
 };
 
 export const editPackageJson = async () => {
-  const data = await readFileSync(join(__dirname, `../${global.options.projectName}/package.json`));
+  const data = await readFileSync(join(__dirname, global.options.projectName, '/', 'package.json'));
   const obj = JSON.parse(data.toString());
 
   if (global.options.language === 'javascript')
@@ -139,5 +137,5 @@ export const editPackageJson = async () => {
     };
   }
 
-  await writeFileSync(join(__dirname, `../${global.options.projectName}/package.json`), Buffer.from(JSON.stringify(obj, null, 2)));
+  await writeFileSync(join(__dirname, global.options.projectName, '/', 'package.json'), Buffer.from(JSON.stringify(obj, null, 2)));
 };
