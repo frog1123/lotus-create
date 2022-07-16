@@ -1,28 +1,25 @@
 import { askProjectName, askLang, askPackageManager } from './inquirer.js';
-import { clearCommandLine, createGitIgnore, createIndex, createProjectDirectory, createSrc, createTsConfig, projectInit } from './utils.js';
+import { clearCommandLine, createGitIgnore, createIndex, createProjectDirectory, createSrc, createTsConfig, editPackageJson, projectInit } from './utils.js';
 
 export const start = async () => {
-  let initializedProject: boolean;
+  let projectInitialized = false;
 
-  askProjectName()
-    .then(() => askLang())
-    .then(() => askPackageManager())
-    .then(() => clearCommandLine())
+  await askProjectName();
+  await askLang();
+  await askPackageManager();
+  await clearCommandLine();
+  await createProjectDirectory()
     .then(() =>
-      createProjectDirectory()
-        .then(() => projectInit())
-        .catch(() => {})
+      projectInit()
         .then(status => {
-          if (status === 'worked') {
-            createSrc().then(() => createIndex());
-            initializedProject = true;
-          } else initializedProject = false;
+          if (status === 'success') projectInitialized = true;
         })
-        .then(() => {
-          if (initializedProject) createTsConfig();
-        })
-        .then(() => {
-          if (initializedProject) createGitIgnore();
-        })
-    );
+        .catch(() => {})
+    )
+    .then(() => {
+      if (projectInitialized) createSrc().then(() => createIndex());
+    })
+    .then(() => {
+      if (projectInitialized) createTsConfig().then(() => createGitIgnore()?.then(async () => await editPackageJson()));
+    });
 };

@@ -1,6 +1,11 @@
 import { exec } from 'child_process';
-import { access, mkdir, writeFileSync } from 'fs';
+import { access, mkdir, writeFileSync, readFileSync } from 'fs';
 import chalk from 'chalk';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const clearCommandLine = () => console.clear();
 
@@ -41,10 +46,10 @@ export const projectInit: () => Promise<string> = () => {
         if (global.options.packageManager === 'yarn') coloredText = chalk.hex('#02acf4')('yarn');
         if (global.options.packageManager === 'pnpm') coloredText = chalk.hex('#f4b802')('pnpm');
 
+        reject('error');
         console.log(`are you sure you have ${coloredText} installed?`);
-        reject('failed');
       } else {
-        resolve('worked');
+        resolve('success');
         console.log(`${chalk.green('✔')} initialized ${global.options.packageManager} project`);
       }
     });
@@ -111,4 +116,28 @@ export const createGitIgnore = () => {
     console.log(`${chalk.red('✘')} failed to create .gitignore`);
     return;
   }
+
+  return new Promise(resolve => {
+    resolve(null);
+  });
+};
+
+export const editPackageJson = async () => {
+  const data = await readFileSync(join(__dirname, `../${global.options.projectName}/package.json`));
+  const obj = JSON.parse(data.toString());
+
+  if (global.options.language === 'javascript')
+    obj.scripts = {
+      start: 'node src/index.js'
+    };
+
+  if (global.options.language === 'typescript') {
+    obj.scripts = {
+      start: 'node dist/index.js',
+      build: 'tsc',
+      watch: 'tsc -w'
+    };
+  }
+
+  await writeFileSync(join(__dirname, `../${global.options.projectName}/package.json`), Buffer.from(JSON.stringify(obj, null, 2)));
 };
