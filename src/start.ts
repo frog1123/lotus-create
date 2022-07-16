@@ -1,5 +1,5 @@
-import { askProjectName, askLang, askPackageManager } from './inquirer.js';
-import { clearCommandLine, createGitIgnore, createIndex, createProjectDirectory, createSrc, createTsConfig, editPackageJson, projectInit } from './utils.js';
+import { askProjectName, askLang, askPackageManager, askLicense, askHolder } from './inquirer.js';
+import { clearCommandLine, createGitIgnore, createIndex, createProjectDirectory, createSrc, createTsConfig, editPackageJson, generateLicense, projectInit } from './utils.js';
 
 export const start = async () => {
   let projectInitialized = false;
@@ -7,6 +7,8 @@ export const start = async () => {
   await askProjectName();
   await askLang();
   await askPackageManager();
+  await askLicense();
+  await askHolder();
   await clearCommandLine();
   await createProjectDirectory()
     .then(() =>
@@ -20,6 +22,11 @@ export const start = async () => {
       if (projectInitialized) createSrc().then(() => createIndex());
     })
     .then(() => {
-      if (projectInitialized) createTsConfig().then(() => createGitIgnore()?.then(async () => await editPackageJson()));
+      if (projectInitialized)
+        createTsConfig().then(() =>
+          createGitIgnore()
+            ?.then(async () => await editPackageJson())
+            .then(() => generateLicense())
+        );
     });
 };

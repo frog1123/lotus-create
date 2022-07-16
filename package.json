@@ -1,6 +1,6 @@
 {
   "name": "lotus-create",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "wip",
   "main": "dist/index.js",
   "bin": {

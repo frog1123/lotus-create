@@ -6,12 +6,16 @@ interface Options {
   projectName: string | null;
   language: string | null;
   packageManager: string | null;
+  license: string | null;
+  holder: string | null;
 }
 
 global.options = {
   projectName: null,
   language: null,
-  packageManager: null
+  packageManager: null,
+  license: null,
+  holder: null
 } as Options;
 
 const color = gradient(['#72ea84', '#35ce4c', '#07af20']);
@@ -70,4 +74,33 @@ export const askPackageManager = async () => {
 
       global.options.packageManager = tmp;
     });
+};
+
+export const askLicense = async () => {
+  await inquirer
+    .prompt([
+      {
+        type: 'list',
+        name: 'license',
+        message: `choose a ${color('package manager')}`,
+        choices: ['mit', 'none']
+      }
+    ])
+    .then(({ license }) => {
+      global.options.license = license;
+    });
+};
+
+export const askHolder = async () => {
+  if (global.options.holder !== 'none') {
+    await inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'holder',
+          message: 'holder: '
+        }
+      ])
+      .then(({ holder }) => (global.options.holder = holder));
+  }
 };

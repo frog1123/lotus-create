@@ -77,7 +77,7 @@ export const createIndex = () => {
   const langShort = global.options.language === 'typescript' ? 'ts' : 'js';
 
   try {
-    writeFileSync(`${global.options.projectName}/src/index.${langShort}`, `console.log('hello world')`);
+    writeFileSync(join(__dirname, global.options.projectName, 'src', `index.${langShort}`), `console.log('hello world')`);
     console.log(`${chalk.green('✔')} created index.${langShort}`);
   } catch (err) {
     console.log(err);
@@ -94,7 +94,7 @@ export const createTsConfig = () => {
     const options = '{\r\n  "compilerOptions": {\r\n    "target": "esnext",\r\n    "module": "esnext",\r\n    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],\r\n    "skipLibCheck": true,\r\n    "sourceMap": true,\r\n    "outDir": "./dist",\r\n    "moduleResolution": "node",\r\n    "removeComments": true,\r\n    "noImplicitAny": true,\r\n    "strictNullChecks": true,\r\n    "strictFunctionTypes": true,\r\n    "noImplicitThis": true,\r\n    "noUnusedLocals": false,\r\n    "noUnusedParameters": false,\r\n    "noImplicitReturns": false,\r\n    "noFallthroughCasesInSwitch": true,\r\n    "allowSyntheticDefaultImports": true,\r\n    "esModuleInterop": true,\r\n    "emitDecoratorMetadata": true,\r\n    "experimentalDecorators": true,\r\n    "resolveJsonModule": true,\r\n    "baseUrl": "."\r\n  },\r\n  "include": ["src/*"]\r\n}\r\n';
 
     try {
-      writeFileSync(`${global.options.projectName}/tsconfig.json`, options);
+      writeFileSync(join(__dirname, global.options.projectName, '/', 'tsconfig.json'), options);
       console.log(`${chalk.green('✔')} created tsconfig.json`);
     } catch {
       console.log(`${chalk.red('✘')} failed to create tsconfig.json`);
@@ -108,7 +108,7 @@ export const createTsConfig = () => {
 
 export const createGitIgnore = () => {
   try {
-    writeFileSync(`${global.options.projectName}/.gitignore`, 'node_modules\n*.env');
+    writeFileSync(join(__dirname, global.options.projectName, '/', '.gitignore'), 'node_modules\n*.env');
     console.log(`${chalk.green('✔')} created .gitignore`);
   } catch {
     console.log(`${chalk.red('✘')} failed to create .gitignore`);
@@ -138,4 +138,42 @@ export const editPackageJson = async () => {
   }
 
   await writeFileSync(join(__dirname, global.options.projectName, '/', 'package.json'), Buffer.from(JSON.stringify(obj, null, 2)));
+
+  return new Promise(resolve => {
+    resolve(null);
+  });
+};
+
+export const generateLicense = () => {
+  const date = new Date();
+
+  const mitLicense = `Copyright (c) ${date.getFullYear()} ${global.options.holder}
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.`;
+
+  if (global.options.license !== 'none') {
+    try {
+      writeFileSync(join(__dirname, global.options.projectName, '/', 'LICENSE'), mitLicense);
+      console.log(`${chalk.green('✔')} created LICENSE`);
+    } catch (err) {
+      console.log(err);
+      console.log(`${chalk.red('✘')} failed to create LICENSE`);
+    }
+  }
 };
