@@ -27,3 +27,4 @@ npm i -g lotus-create
 - typescript support (done)
 - auto gitignore for node_modules & env (done)
 - license (done)
+- nodemon

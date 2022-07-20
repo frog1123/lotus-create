@@ -10,16 +10,14 @@ export const start = async () => {
   await askLicense();
   await askHolder();
   await clearCommandLine();
-  await createProjectDirectory()
-    .then(() =>
-      projectInit()
-        .then(status => {
-          if (status === 'success') projectInitialized = true;
-        })
-        .catch(() => {})
-    )
+  await createProjectDirectory();
+  await projectInit()
+    .then(status => {
+      if (status === 'success') projectInitialized = true;
+    })
+    .catch(() => {})
     .then(() => {
-      if (projectInitialized) createSrc().then(() => createIndex());
+      if (projectInitialized) createSrc().then(createIndex);
     })
     .then(() => {
       if (projectInitialized)

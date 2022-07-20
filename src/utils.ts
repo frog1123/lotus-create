@@ -7,32 +7,25 @@ const __dirname = process.cwd();
 
 export const clearCommandLine = () => console.clear();
 
-export const createProjectDirectory: () => Promise<string> = async () => {
+export const createProjectDirectory = async (): Promise<void> => {
   const path = await global.options.projectName;
 
-  const directory: Promise<string> = new Promise((resolve, reject) => {
-    access(path, (error: any) => {
-      if (error) {
-        mkdir(path, (error: any) => {
-          if (error) {
-            console.log(error);
-            reject(path);
-          } else {
-            resolve(path);
-            console.log(`${chalk.green('✔')} created new directory: ${path}`);
-          }
-        });
-      } else {
-        console.log(`${chalk.red('✘')} directory already exists`);
-        reject(path);
-      }
-    });
+  access(path, (error: any) => {
+    if (error) {
+      mkdir(path, (error: any) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(`${chalk.green('✔')} created new directory: ${path}`);
+        }
+      });
+    } else {
+      console.log(`${chalk.red('✘')} directory already exists`);
+    }
   });
-
-  return directory;
 };
 
-export const projectInit: () => Promise<string> = () => {
+export const projectInit = (): Promise<string> => {
   const worked: Promise<string> = new Promise((resolve, reject) => {
     exec(`cd ${global.options.projectName} && ${global.options.packageManager} init -y`, err => {
       if (err) {
@@ -56,7 +49,7 @@ export const projectInit: () => Promise<string> = () => {
   return worked;
 };
 
-export const createSrc = () => {
+export const createSrc = (): Promise<null> => {
   const directory: Promise<null> = new Promise((resolve, reject) => {
     exec(`cd ${global.options.projectName} && mkdir src`, err => {
       console.log(`${chalk.green('✔')} created new directory: ${global.options.projectName}/src`);
@@ -73,7 +66,7 @@ export const createSrc = () => {
   return directory;
 };
 
-export const createIndex = () => {
+export const createIndex = async (): Promise<void> => {
   const langShort = global.options.language === 'typescript' ? 'ts' : 'js';
 
   try {
@@ -83,13 +76,9 @@ export const createIndex = () => {
     console.log(err);
     console.log(`${chalk.red('✘')} failed to create index.${langShort}`);
   }
-
-  return new Promise(resolve => {
-    resolve(null);
-  });
 };
 
-export const createTsConfig = () => {
+export const createTsConfig = async (): Promise<void> => {
   if (global.options.language === 'typescript') {
     const options = '{\r\n  "compilerOptions": {\r\n    "target": "esnext",\r\n    "module": "esnext",\r\n    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],\r\n    "skipLibCheck": true,\r\n    "sourceMap": true,\r\n    "outDir": "./dist",\r\n    "moduleResolution": "node",\r\n    "removeComments": true,\r\n    "noImplicitAny": true,\r\n    "strictNullChecks": true,\r\n    "strictFunctionTypes": true,\r\n    "noImplicitThis": true,\r\n    "noUnusedLocals": false,\r\n    "noUnusedParameters": false,\r\n    "noImplicitReturns": false,\r\n    "noFallthroughCasesInSwitch": true,\r\n    "allowSyntheticDefaultImports": true,\r\n    "esModuleInterop": true,\r\n    "emitDecoratorMetadata": true,\r\n    "experimentalDecorators": true,\r\n    "resolveJsonModule": true,\r\n    "baseUrl": "."\r\n  },\r\n  "include": ["src/*"]\r\n}\r\n';
 
@@ -100,36 +89,29 @@ export const createTsConfig = () => {
       console.log(`${chalk.red('✘')} failed to create tsconfig.json`);
     }
   }
-
-  return new Promise(resolve => {
-    resolve(null);
-  });
 };
 
-export const createGitIgnore = () => {
+export const createGitIgnore = async (): Promise<void> => {
   try {
-    writeFileSync(join(__dirname, global.options.projectName, '/', '.gitignore'), 'node_modules\n*.env');
+    writeFileSync(join(__dirname, global.options.projectName, '/', '.gitignore'), `node_modules\n*.env\n${global.options.language === 'typescript' ? 'dist' : ''}`);
     console.log(`${chalk.green('✔')} created .gitignore`);
   } catch {
     console.log(`${chalk.red('✘')} failed to create .gitignore`);
     return;
   }
-
-  return new Promise(resolve => {
-    resolve(null);
-  });
 };
 
-export const editPackageJson = async () => {
+export const editPackageJson = async (): Promise<void> => {
   const data = await readFileSync(join(__dirname, global.options.projectName, '/', 'package.json'));
   const obj = JSON.parse(data.toString());
 
-  if (global.options.language === 'javascript')
-    obj.scripts = {
-      start: 'node src/index.js'
-    };
+  if (global.options.language === 'javascript') obj.main = 'src/index.js';
+  obj.scripts = {
+    start: 'node src/index.js'
+  };
 
   if (global.options.language === 'typescript') {
+    obj.main = 'dist/index.js';
     obj.scripts = {
       start: 'node dist/index.js',
       build: 'tsc',
@@ -138,13 +120,9 @@ export const editPackageJson = async () => {
   }
 
   await writeFileSync(join(__dirname, global.options.projectName, '/', 'package.json'), Buffer.from(JSON.stringify(obj, null, 2)));
-
-  return new Promise(resolve => {
-    resolve(null);
-  });
 };
 
-export const generateLicense = () => {
+export const generateLicense = async (): Promise<void> => {
   const date = new Date();
 
   const mitLicense = `Copyright (c) ${date.getFullYear()} ${global.options.holder}
