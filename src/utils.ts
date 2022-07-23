@@ -27,7 +27,7 @@ export const createProjectDirectory = async (): Promise<void> => {
 
 export const projectInit = (): Promise<string> => {
   const worked: Promise<string> = new Promise((resolve, reject) => {
-    exec(`cd ${global.options.projectName} && ${global.options.packageManager} init -y`, err => {
+    exec(`cd ${global.options.projectName} && ${global.options.packageManager} init ${global.options.packageManager === 'npm' || global.options.packageManager === 'yarn' ? '-y' : ''}`, err => {
       if (err) {
         console.log(`${chalk.red('✘')} failed to initialize the project`);
 
@@ -47,6 +47,20 @@ export const projectInit = (): Promise<string> => {
   });
 
   return worked;
+};
+
+export const addNodemon = async (): Promise<void> => {
+  let installCmd;
+
+  if (global.options.packageManager === 'npm' || global.options.packageManager === 'pnpm') installCmd = 'i';
+  if (global.options.packageManager === 'yarn') installCmd = 'add';
+
+  if (global.options.useNodemon) {
+    exec(`cd ${global.options.projectName} && ${global.options.packageManager} ${installCmd} nodemon`, err => {
+      console.log(`${chalk.green('✔')} installed nodemon`);
+      if (err) console.log(`${chalk.red('✘')} fail to install nodemon`);
+    });
+  }
 };
 
 export const createSrc = (): Promise<null> => {
@@ -105,18 +119,34 @@ export const editPackageJson = async (): Promise<void> => {
   const data = await readFileSync(join(__dirname, global.options.projectName, '/', 'package.json'));
   const obj = JSON.parse(data.toString());
 
-  if (global.options.language === 'javascript') obj.main = 'src/index.js';
-  obj.scripts = {
-    start: 'node src/index.js'
-  };
+  if (global.options.language === 'javascript') {
+    obj.main = 'src/index.js';
+    if (global.options.useNodemon)
+      obj.scripts = {
+        'start:dev': 'nodemon src/index.js',
+        'start:prod': 'node src/index.js'
+      };
+    else
+      obj.scripts = {
+        start: 'node src/index.js'
+      };
+  }
 
   if (global.options.language === 'typescript') {
     obj.main = 'dist/index.js';
-    obj.scripts = {
-      start: 'node dist/index.js',
-      build: 'tsc',
-      watch: 'tsc -w'
-    };
+    if (global.options.useNodemon)
+      obj.scripts = {
+        'start:dev': 'nodemon dist/index.js',
+        'start:prod': 'node dist/index.js',
+        'watch:dev': 'tsc -w',
+        'build:prod': 'tsc'
+      };
+    else
+      obj.scripts = {
+        start: 'node dist/index.js',
+        build: 'tsc',
+        watch: 'tsc -w'
+      };
   }
 
   await writeFileSync(join(__dirname, global.options.projectName, '/', 'package.json'), Buffer.from(JSON.stringify(obj, null, 2)));

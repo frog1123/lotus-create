@@ -3,20 +3,15 @@ import gradient from 'gradient-string';
 import chalk from 'chalk';
 
 interface Options {
-  projectName: string | null;
-  language: string | null;
-  packageManager: string | null;
-  license: string | null;
-  holder: string | null;
+  projectName: string;
+  language: string;
+  packageManager: string;
+  useNodemon: boolean;
+  license: string;
+  holder: string;
 }
 
-global.options = {
-  projectName: null,
-  language: null,
-  packageManager: null,
-  license: null,
-  holder: null
-} as Options;
+global.options = {} as Options;
 
 const color = gradient(['#72ea84', '#35ce4c', '#07af20']);
 
@@ -73,6 +68,22 @@ export const askPackageManager = async () => {
       if (packageManager === '\x1B[38;2;244;184;2mpnpm\x1B[39m') tmp = 'pnpm';
 
       global.options.packageManager = tmp;
+    });
+};
+
+export const askNodemon = async () => {
+  await inquirer
+    .prompt([
+      {
+        type: 'list',
+        name: 'useNodemon',
+        message: 'use nodemon',
+        choices: ['yes', 'no']
+      }
+    ])
+    .then(({ useNodemon }) => {
+      const tmp = useNodemon === 'yes' ? true : false;
+      global.options.useNodemon = tmp;
     });
 };
 
